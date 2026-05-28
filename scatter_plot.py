@@ -20,6 +20,14 @@ features = (
 )
 
 
+house_colors = {
+    "Gryffindor": "red",
+    "Hufflepuff": "yellow",
+    "Ravenclaw": "blue",
+    "Slytherin": "green"
+}
+
+
 def get_data(file_name: str):
     """Load dataset from a CSV file.
     """
@@ -54,13 +62,13 @@ def get_feature():
     return features[choice]
             
 
-def plot_points(data, x_label, y_label):
+def plot_points(data, x_label, y_label, colors):
     """Create a scatter plot for two selected features.
     """
     x = data[x_label]
     y = data[y_label]
     
-    plt.scatter(x, y, c="r")
+    plt.scatter(x, y, c=colors)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     
@@ -84,7 +92,8 @@ def main():
     try:
         data = get_data(file_name)
         data.dropna()
-        plot_points(data, x_label, y_label)
+        colors = data["Hogwarts House"].map(house_colors)
+        plot_points(data, x_label, y_label, colors)
         plt.show()
     except KeyboardInterrupt:
         print("\nProgram terminated by user.")
