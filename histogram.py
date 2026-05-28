@@ -52,54 +52,44 @@ if __name__ == "__main__":
 	if dataset is None:
 		exit(1)
 
-	print("Features:")
-	for i in range(len(features)):
-		print(f"{i} - {features[i]}")
-
-	col = input("Enter the feature number to plot (0-12): ")
-	try:
-		col = int(col)
-	except ValueError:
-		print("Error: Invalid feature number.")
-		exit(1)
-	if col < 0 or col >= len(features):
-		print("Error: Invalid feature number.")
-		exit(1)
-
-	print(f"Plotting histogram for feature: {features[col]}")
-
 	data = np.array(dataset)
 
-	gryffindor = []
-	ravenclaw = []
-	hufflepuff = []
-	slytherin = []
+	fig, axs = plt.subplots(4, 4, figsize=(10, 8))
 
-	for i in range(len(data)):
-		tmp = None
-		if data[i][1] == "Gryffindor":
-			tmp = gryffindor
-		elif data[i][1] == "Ravenclaw":
-			tmp = ravenclaw
-		elif data[i][1] == "Hufflepuff":
-			tmp = hufflepuff
-		elif data[i][1] == "Slytherin":
-			tmp = slytherin
+	for n in range(len(features)):
 
-		if not math.isnan(float(data[i][col + 6])):
-			tmp.append(float(data[i][col + 6]))
+		ligne = n // 4
+		colonne = n % 4
 
-	plt.hist(gryffindor, bins=5, alpha=0.5, label="gryffindor")
-	plt.hist(ravenclaw, bins=5, alpha=0.5, label="ravenclaw")
-	plt.hist(hufflepuff, bins=5, alpha=0.5, label="hufflepuff")
-	plt.hist(slytherin, bins=5, alpha=0.5, label="slytherin")
+		gryffindor = []
+		ravenclaw = []
+		hufflepuff = []
+		slytherin = []
 
-	plt.xlabel("Notes")
-	plt.ylabel("Fréquence")
-	plt.title(features[col])
+		for i in range(len(data)):
+			tmp = None
+			if data[i][1] == "Gryffindor":
+				tmp = gryffindor
+			elif data[i][1] == "Ravenclaw":
+				tmp = ravenclaw
+			elif data[i][1] == "Hufflepuff":
+				tmp = hufflepuff
+			elif data[i][1] == "Slytherin":
+				tmp = slytherin
 
-	plt.legend()
+			if not math.isnan(float(data[i][n + 6])):
+				tmp.append(float(data[i][n + 6]))
+
+		axs[ligne, colonne].hist(gryffindor, bins=5, alpha=0.5, color='red', label="gryffindor")
+		axs[ligne, colonne].hist(ravenclaw, bins=5, alpha=0.5, color='blue', label="ravenclaw")
+		axs[ligne, colonne].hist(hufflepuff, bins=5, alpha=0.5, color='yellow', label="hufflepuff")
+		axs[ligne, colonne].hist(slytherin, bins=5, alpha=0.5, color='green', label="slytherin")
+
+		axs[ligne, colonne].set_title(features[n])
+
+	fig.delaxes(axs[3, 1])
+	fig.delaxes(axs[3, 2])
+	fig.delaxes(axs[3, 3])
+
+	plt.tight_layout()
 	plt.show()
-
-# 10 - Care of Magical Creatures
-# 0 - Arithmancy ~
