@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 import math
 import json
 
 
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.8
 ITERATIONS = 1000
 
 
@@ -77,27 +78,46 @@ def sigmoid(z) -> float:
 	return 1 / (1 + np.exp(-z))
 
 
+def cost_function(X, y, theta):
+	"""Compute the cost function for logistic regression.
+	"""
+	m = len(X)
+	h = sigmoid(X @ theta)
+	cost = (-1 / m) * (y.T @ np.log(h) + (1 - y).T @ np.log(1 - h))
+	return cost
+
+
 def gradient_descent(X, y, lr=LEARNING_RATE, iter=ITERATIONS):
 	"""Train a binary logistic regression classifier using gradient descent.
 	"""
+	cost_history = np.zeros(iter)
 	theta = np.zeros(13)
-	for _ in range(iter):
+
+	for i in range(iter):
 		h = sigmoid(X @ theta)
 		gradient = (1 / len(X)) * (np.transpose(X) @ (h - y))
+		cost_history[i] = cost_function(X, y, theta)
 		theta -= lr * gradient
-	return theta
+	return theta, cost_history
 
 
 def get_weights(dataset, values):
 	"""Train a binary logistic regression classifier for each house and return the weights.
 	"""
+	has_cost_history = False
 	weights = {}
 	for house in houses:
 		y = dataset["Hogwarts House"]
 		y_binary = (y == house).astype(int)
-		theta = gradient_descent(np.array(values), y_binary)
+  
+		if not has_cost_history:
+			theta, cost_history = gradient_descent(np.array(values), y_binary)
+			has_cost_history = True
+		else:
+			theta, _ = gradient_descent(np.array(values), y_binary)
+   
 		weights[house] = theta.tolist()
-	return weights
+	return weights, cost_history
 
 
 def save_weights(weights):
@@ -107,6 +127,16 @@ def save_weights(weights):
 		json.dump(weights, f)
 
 
+def plot_cost_history(cost_history):
+	"""Plot the cost history over iterations.
+	"""
+	plt.plot(cost_history)
+	plt.xlabel('Iteration')
+	plt.ylabel('Cost')
+	plt.title('Cost History')
+	plt.show()
+
+
 def main():
 	dataset = load('datasets/dataset_train.csv')
 	if dataset is None:
@@ -114,8 +144,9 @@ def main():
 
 	data = fill_nan_with_mean(dataset)
 	values = get_values(data)
-	weights = get_weights(dataset, values)
+	weights, cost_history = get_weights(dataset, values)
 	save_weights(weights)
+	plot_cost_history(cost_history)
 
 
 if __name__ == "__main__":
