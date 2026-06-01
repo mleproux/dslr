@@ -3,6 +3,14 @@ import numpy as np
 import math
 
 
+houses = [
+	"Gryffindor",
+	"Ravenclaw",
+	"Hufflepuff",
+	"Slytherin"
+]
+
+
 def load(path: str) -> pd.DataFrame:
 	"""Load a CSV file into a map object.
 	"""
@@ -20,19 +28,70 @@ def load(path: str) -> pd.DataFrame:
 	return None
 
 
+def bonus_field(data, i, house):
+	"""Calculate the bonus field based on the given column.
+	"""
+	count = 0
+	total = 0.0
+	for k in range(len(data)):
+		if data[k][1] == house and not math.isnan(data[k][i + 6]):
+			min = data[k][i + 6]
+			max = data[k][i + 6]
+			break
+	for k in range(len(data)):
+		if data[k][1] == house and not math.isnan(data[k][i + 6]):
+			count += 1
+			total += data[k][i + 6]
+			if data[k][i + 6] < min:
+				min = data[k][i + 6]
+			if data[k][i + 6] > max:
+				max = data[k][i + 6]
+	mean = math.floor(total / count * 100) / 100
+	min = math.floor(min * 100) / 100
+	max = math.floor(max * 100) / 100
+	if math.fabs(mean) > 1000:
+		mean = math.floor(mean * 10) / 10
+	if math.fabs(min) > 1000:
+		min = math.floor(min * 10) / 10
+	if math.fabs(max) > 1000:
+		max = math.floor(max * 10) / 10
+	return [count, mean, min, max]
+
+
+def print_house(tab, n):
+	"""Print the bonus fields for a specific house.
+	"""
+	str = "\t\t"
+	if n == 3:
+		str = "\t"
+	bonus_fields = ["Count", "Mean", "Min", "Max"]
+	for i in range(4):
+		str = "\t\t"
+		if n == 3 and i >= 2:
+			str = "\t"
+		print(f"{bonus_fields[i]}\t{tab[0][4 * n + i]}{str}{tab[1][4 * n + i]}\t\t{tab[2][4 * n + i]}\t\t{tab[3][4 * n + i]}\t\t{tab[4][4 * n + i]}\t\t{tab[5][4 * n + i]}\t\t{tab[6][4 * n + i]}\t\t{tab[7][4 * n + i]}\t\t{tab[8][4 * n + i]}\t\t{tab[9][4 * n + i]}\t\t{tab[10][4 * n + i]}\t\t{tab[11][4 * n + i]}\t\t{tab[12][4 * n + i]}")
+
+
+def print_bonus(tab):
+	"""Print the bonus fields for each house.
+	"""
+	for i in range(4):
+		print(houses[i])
+		print_house(tab, i + 2)
+
+
 def print_results(tab):
 	"""Print the results in a formatted way.
 	"""
 	print("\tFeature 1\tFeature 2\tFeature 3\tFeature 4\tFeature 5\tFeature 6\tFeature 7\tFeature 8\tFeature 9\tFeature 10\tFeature 11\tFeature 12\tFeature 13")
-	print(f"Count\t{tab[0][0]}\t\t{tab[1][0]}\t\t{tab[2][0]}\t\t{tab[3][0]}\t\t{tab[4][0]}\t\t{tab[5][0]}\t\t{tab[6][0]}\t\t{tab[7][0]}\t\t{tab[8][0]}\t\t{tab[9][0]}\t\t{tab[10][0]}\t\t{tab[11][0]}\t\t{tab[12][0]}")
-	print(f"Mean\t{tab[0][1]}\t{tab[1][1]}\t\t{tab[2][1]}\t\t{tab[3][1]}\t\t{tab[4][1]}\t\t{tab[5][1]}\t\t{tab[6][1]}\t\t{tab[7][1]}\t\t{tab[8][1]}\t\t{tab[9][1]}\t\t{tab[10][1]}\t\t{tab[11][1]}\t\t{tab[12][1]}")
-	print(f"Std\t{tab[0][2]}\t{tab[1][2]}\t\t{tab[2][2]}\t\t{tab[3][2]}\t\t{tab[4][2]}\t\t{tab[5][2]}\t\t{tab[6][2]}\t\t{tab[7][2]}\t\t{tab[8][2]}\t\t{tab[9][2]}\t\t{tab[10][2]}\t\t{tab[11][2]}\t\t{tab[12][2]}")
-	print(f"Min\t{tab[0][3]}\t{tab[1][3]}\t\t{tab[2][3]}\t\t{tab[3][3]}\t\t{tab[4][3]}\t\t{tab[5][3]}\t\t{tab[6][3]}\t\t{tab[7][3]}\t\t{tab[8][3]}\t\t{tab[9][3]}\t\t{tab[10][3]}\t\t{tab[11][3]}\t\t{tab[12][3]}")
-	print(f"25%\t{tab[0][4]}\t\t{tab[1][4]}\t\t{tab[2][4]}\t\t{tab[3][4]}\t\t{tab[4][4]}\t\t{tab[5][4]}\t\t{tab[6][4]}\t\t{tab[7][4]}\t\t{tab[8][4]}\t\t{tab[9][4]}\t\t{tab[10][4]}\t\t{tab[11][4]}\t\t{tab[12][4]}")
-	print(f"50%\t{tab[0][5]}\t\t{tab[1][5]}\t\t{tab[2][5]}\t\t{tab[3][5]}\t\t{tab[4][5]}\t\t{tab[5][5]}\t\t{tab[6][5]}\t\t{tab[7][5]}\t\t{tab[8][5]}\t\t{tab[9][5]}\t\t{tab[10][5]}\t\t{tab[11][5]}\t\t{tab[12][5]}")
-	print(f"75%\t{tab[0][6]}\t\t{tab[1][6]}\t\t{tab[2][6]}\t\t{tab[3][6]}\t\t{tab[4][6]}\t\t{tab[5][6]}\t\t{tab[6][6]}\t\t{tab[7][6]}\t\t{tab[8][6]}\t\t{tab[9][6]}\t\t{tab[10][6]}\t\t{tab[11][6]}\t\t{tab[12][6]}")
-	print(f"Max\t{tab[0][7]}\t{tab[1][7]}\t\t{tab[2][7]}\t\t{tab[3][7]}\t\t{tab[4][7]}\t\t{tab[5][7]}\t\t{tab[6][7]}\t\t{tab[7][7]}\t\t{tab[8][7]}\t\t{tab[9][7]}\t\t{tab[10][7]}\t\t{tab[11][7]}\t\t{tab[12][7]}")
-
+	fields = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
+	for i in range(8):
+		if i in [1, 2, 3, 7]:
+			str = "\t"
+		else:
+			str = "\t\t"
+		print(f"{fields[i]}\t{tab[0][i]}{str}{tab[1][i]}\t\t{tab[2][i]}\t\t{tab[3][i]}\t\t{tab[4][i]}\t\t{tab[5][i]}\t\t{tab[6][i]}\t\t{tab[7][i]}\t\t{tab[8][i]}\t\t{tab[9][i]}\t\t{tab[10][i]}\t\t{tab[11][i]}\t\t{tab[12][i]}")
+	print_bonus(tab)
 
 
 def main():
@@ -51,8 +110,8 @@ def main():
 		col = np.array(col)
 
 		total = float(0.0)
-		min_val = float(0.0)
-		max_val = float(0.0)
+		min_val = float(col[0])
+		max_val = float(col[0])
 
 		for elem in col:
 			total += elem
@@ -64,19 +123,20 @@ def main():
 		count = len(col)
 		mean = total / count
 		std = math.floor(math.sqrt(sum((elem - mean) ** 2 for elem in col) / count) * 100) / 100
-
+		mean = math.floor(mean * 100) / 100
+		min_val = math.floor(min_val * 100) / 100
+		max_val = math.floor(max_val * 100) / 100
 		sorted_col = sorted(col)
 		q1 = math.floor(sorted_col[int((count + 1) / 4)] * 100) / 100
 		q2 = math.floor(sorted_col[int((count + 1) / 2)] * 100) / 100
 		q3 = math.floor(sorted_col[int(3 * (count + 1) / 4)] * 100) / 100
 
-		mean = math.floor(mean * 100) / 100
-		min_val = math.floor(min_val * 100) / 100
-		max_val = math.floor(max_val * 100) / 100
-
 		feature = np.array([count, mean, std, min_val, q1, q2, q3, max_val])
+		for house in houses:
+			bonus_fields = bonus_field(data, i, house)
+			for field in bonus_fields:
+				feature = np.append(feature, field)
 		tab.append(feature)
-
 	print_results(tab)
 
 
