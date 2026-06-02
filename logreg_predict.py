@@ -94,7 +94,7 @@ def save_in_csv_file(predictions):
 			writer.writerow([i, pred])
 
 
-def compare_predictions(predictions):
+def compare_predictions(predictions, weights):
 	"""Compare the predictions against the expected values
 	using the accuracy score from the Scikit-Learn library
 	and print the accuracy.
@@ -102,9 +102,6 @@ def compare_predictions(predictions):
 	dataset = load('datasets/dataset_train.csv')
 	if dataset is None:
 		exit(1)
-
-	with open("weights.json") as f:
-		weights = json.load(f)
 
 	data = fill_nan_with_mean(dataset)
 	values = get_values(data)
@@ -121,14 +118,18 @@ def main():
 	dataset = load('datasets/dataset_test.csv')
 	if dataset is None:
 		exit(1)
-
-	with open("weights.json") as f:
+  
+	try:
+		f = open("weights.json")
 		weights = json.load(f)
+	except Exception as e:
+		print(f"Error: An unexpected error occurred: {e}")
+		exit(1)
 
 	data = fill_nan_with_mean(dataset)
 	values = get_values(data)
 	predictions = predict(values, weights)
-	save_in_csv_file(predictions)
+	save_in_csv_file(predictions, weights)
 
 	compare_predictions(predictions)
 

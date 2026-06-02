@@ -5,7 +5,7 @@ import math
 import json
 
 
-LEARNING_RATE = 0.8
+LEARNING_RATE = 0.08
 ITERATIONS = 1000
 
 
@@ -104,20 +104,17 @@ def gradient_descent(X, y, lr=LEARNING_RATE, iter=ITERATIONS):
 def get_weights(dataset, values):
 	"""Train a binary logistic regression classifier for each house and return the weights.
 	"""
-	has_cost_history = False
 	weights = {}
+	cost_histories = {}
 	for house in houses:
 		y = dataset["Hogwarts House"]
 		y_binary = (y == house).astype(int)
-  
-		if not has_cost_history:
-			theta, cost_history = gradient_descent(np.array(values), y_binary)
-			has_cost_history = True
-		else:
-			theta, _ = gradient_descent(np.array(values), y_binary)
-   
+
+		theta, cost_history = gradient_descent(np.array(values), y_binary)
+
 		weights[house] = theta.tolist()
-	return weights, cost_history
+		cost_histories[house] = cost_history
+	return weights, cost_histories
 
 
 def save_weights(weights):
@@ -127,13 +124,15 @@ def save_weights(weights):
 		json.dump(weights, f)
 
 
-def plot_cost_history(cost_history):
-	"""Plot the cost history over iterations.
+def plot_cost_history(cost_histories):
+	"""Plot the cost history over iterations for each house.
 	"""
-	plt.plot(cost_history)
+	for house, cost_history in cost_histories.items():
+		plt.plot(cost_history, label=house)
 	plt.xlabel('Iteration')
 	plt.ylabel('Cost')
 	plt.title('Cost History')
+	plt.legend()
 	plt.show()
 
 
