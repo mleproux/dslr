@@ -46,13 +46,15 @@ def main():
         return 0
     
     file_name: str = sys.argv[1]
-    data = get_data(file_name)
-    courses = data[list(features)]
-    num_features = len(features)
-    colors = data["Hogwarts House"].map(house_colors)
     
-    fig, axes = plt.subplots(num_features, num_features, figsize=(15, 15))
     try:
+        data = get_data(file_name)
+        courses = data[list(features)]
+        num_features = len(features)
+        colors = data["Hogwarts House"].map(house_colors)
+        
+        fig, axes = plt.subplots(num_features, num_features, figsize=(15, 15))
+        
         for i in range(num_features):
             for j in range(num_features):
                 ax = axes[i, j]

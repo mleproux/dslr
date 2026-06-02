@@ -142,5 +142,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-# idee bonus : mettre resultats dans .csv ...
+ 
